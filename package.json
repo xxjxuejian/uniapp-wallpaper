@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "pkg-types": "^2.1.0",
+    "unplugin-auto-import": "^0.18.6"
+  }
+}
