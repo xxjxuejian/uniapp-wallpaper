@@ -8,11 +8,11 @@ export function request(config = {}) {
   if (ACCESS_KEY) {
     header["access-key"] = ACCESS_KEY;
   }
-  // 可以加入加载动画
-  uni.showLoading({
-    title: "加载中...",
-    mask: true,
-  });
+  // 可以加入加载动画,很多个网络请求都会触发这个，就有多个加载动画，怎么解决呢
+  // uni.showLoading({
+  //   title: "加载中...",
+  //   mask: true,
+  // });
 
   return new Promise((resolve, reject) => {
     uni.request({
@@ -22,7 +22,7 @@ export function request(config = {}) {
       header: header,
       timeout: 10000,
       success: (res) => {
-        uni.hideLoading(); //请求完成，隐藏加载动画
+        // uni.hideLoading(); //请求完成，隐藏加载动画
         if (res.statusCode === 200) {
           const data = res.data;
           // data内部结构是后端定义的了
@@ -45,7 +45,7 @@ export function request(config = {}) {
         }
       },
       fail: (err) => {
-        uni.hideLoading(); //请求失败，隐藏加载动画
+        // uni.hideLoading(); //请求失败，隐藏加载动画
         reject(err);
       },
     });
