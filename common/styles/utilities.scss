@@ -1,0 +1,28 @@
+.pageBg {
+  // 渐变:写在最上面的,层级最高
+  background: linear-gradient(to bottom, transparent, #fff 400rpx),
+    linear-gradient(to right, #beecd8 20%, #f4e2d8);
+
+  min-height: 80vh;
+}
+
+.loadingLayout {
+  padding: 30rpx 0;
+}
+
+.safe-area-inset-bottom {
+  height: env(safe-area-inset-bottom);
+}
+// 单行省略号
+/* 单行省略号 */
+.single-ellipsis {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

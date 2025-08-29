@@ -1,5 +1,5 @@
 <template>
-  <view class="home">
+  <view class="home pageBg">
     <!-- 轮播图 -->
     <view class="banner">
       <swiper

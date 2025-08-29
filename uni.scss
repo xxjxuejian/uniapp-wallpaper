@@ -78,7 +78,8 @@ $uni-font-size-paragraph: 15px;
 /*
 	这个文件中定义的scss变量不需要导入，可以直接使用
 	还可以把这个文件作为scss的入口文件，导入其它的scss文件，在项目中也可以直接使用
+	但是只建议这里定义全局变量或者导入的文件中定义的也是全局变量
+	不要在这里定义全局class
 	@import "@/common/styles/test.scss"; 不要使用@import url()
 */
-@import "@/common/styles/test.scss";
-@import "@/common/styles/base-style.scss";
+@import "@/common/styles/variables.scss";
