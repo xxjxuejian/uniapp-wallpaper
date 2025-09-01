@@ -1,7 +1,9 @@
 <template>
   <view class="category-item">
     <navigator
-      :url="'/pages/classlist/classlist?id=' + item._id + '&name=' + item.name"
+      :url="
+        '/pages/category-detail/index?id=' + item._id + '&name=' + item.name
+      "
       class="box"
       v-if="!isMore">
       <image class="pic" :src="item.picurl" mode="aspectFill"></image>

@@ -7,3 +7,11 @@ export function getCategoryListApi(data = {}) {
     data: data,
   });
 }
+
+// 获取指定分类下的图片列表
+export function getCateDetailListApi(data = {}) {
+  return request({
+    url: "/wallList",
+    data: data,
+  });
+}

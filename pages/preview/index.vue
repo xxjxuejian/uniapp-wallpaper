@@ -1,0 +1,7 @@
+<template>
+  <view class="preview"></view>
+</template>
+
+<script setup></script>
+
+<style lang="scss" scoped></style>

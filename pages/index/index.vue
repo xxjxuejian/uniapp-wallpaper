@@ -19,10 +19,12 @@
             <image :src="item.picurl" mode="aspectFill"></image>
           </navigator>
 
-          <!-- 页面跳转 -->
+          <!-- 页面跳转,跳转到特定的分类页
+					 item.url: "id=6524a48f6523417a8a8b825d&name=可爱萌宠"
+					 -->
           <navigator
             v-else
-            :url="`/pages/classlist/classlist?${item.url}`"
+            :url="`/pages/category-detail/index?${item.url}`"
             class="link">
             <image :src="item.picurl" mode="aspectFill"></image>
           </navigator>
@@ -131,6 +133,7 @@ const topicSelectList = ref([]); //专题精选列表
 function getHomeBanner() {
   getHomeBannerApi().then((res) => {
     bannerList.value = res.data;
+    console.log("轮播图", bannerList.value);
   });
 }
 getHomeBanner();

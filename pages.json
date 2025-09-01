@@ -18,6 +18,30 @@
       "style": {
         "navigationBarTitleText": "我的"
       }
+    },
+    {
+      "path": "pages/preview/index",
+      "style": {
+        "navigationBarTitleText": "预览"
+      }
+    },
+    {
+      "path": "pages/category-detail/index",
+      "style": {
+        "navigationBarTitleText": "分类详情"
+      }
+    },
+    {
+      "path": "pages/funny/index",
+      "style": {
+        "navigationBarTitleText": "梗图集"
+      }
+    },
+    {
+      "path": "pages/notice/index",
+      "style": {
+        "navigationBarTitleText": "通知"
+      }
     }
   ],
   "globalStyle": {

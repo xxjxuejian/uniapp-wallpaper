@@ -11,34 +11,45 @@
     </view>
 
     <view class="content">
-      <view class="section" v-for="i in 3">
-        <view class="row">
-          <view class="left">
-            <uni-icons type="download-filled" size="20"></uni-icons>
-            <view class="text">我的下载</view>
-          </view>
-          <view class="right">
-            <uni-icons type="right" size="15" color="#aaa"></uni-icons>
-          </view>
-        </view>
-        <view class="row">
-          <view class="left">
-            <uni-icons type="download-filled" size="20"></uni-icons>
-            <view class="text">我的评分</view>
-          </view>
-          <view class="right">
-            <uni-icons type="right" size="15" color="#aaa"></uni-icons>
-          </view>
-        </view>
-        <view class="row">
-          <view class="left">
-            <uni-icons type="download-filled" size="20"></uni-icons>
-            <view class="text">梗图集</view>
-          </view>
-          <view class="right">
-            <uni-icons type="right" size="15" color="#aaa"></uni-icons>
-          </view>
-        </view>
+      <view class="section">
+        <navigator
+          url="/pages/category-detail/index?name=我的下载&type=download">
+          <user-item icon="download-filled" title="我的下载"></user-item>
+        </navigator>
+        <navigator url="/pages/category-detail/index?name=我的评分&type=score">
+          <user-item icon="star-filled" title="我的评分"></user-item>
+        </navigator>
+        <navigator url="/pages/funny/index">
+          <user-item icon="image-filled" title="梗图集"></user-item>
+        </navigator>
+      </view>
+
+      <view class="section">
+        <navigator url="/pages/notice/index">
+          <user-item icon="notification-filled" title="订阅更新"></user-item>
+        </navigator>
+        <navigator url="/pages/notice/index">
+          <user-item icon="flag-filled" title="常见问题"></user-item>
+        </navigator>
+
+        <user-item
+          icon="chatboxes-filled"
+          title="联系客服"
+          :is-contact="true"></user-item>
+
+        <navigator url="/pages/notice/index">
+          <user-item icon="chatboxes-filled" title="反馈建议"></user-item>
+        </navigator>
+      </view>
+
+      <view class="section">
+        <user-item icon="gear-filled" title="退出登录">
+          <template #right>
+            <view class="right">
+              <view class="text">退出当前账号</view>
+            </view>
+          </template>
+        </user-item>
       </view>
     </view>
   </view>
@@ -46,6 +57,10 @@
 
 <script setup>
 const userInfo = ref(null);
+
+const handleLogout = () => {
+  console.log("退出登录");
+};
 </script>
 
 <style lang="scss" scoped>
@@ -55,7 +70,6 @@ const userInfo = ref(null);
     flex-direction: column;
     align-items: center;
     padding: 50rpx 0;
-    // background-color: lightblue;
 
     .avatar {
       width: 160rpx;
@@ -87,48 +101,16 @@ const userInfo = ref(null);
 
     .section {
       width: 100%;
-      // margin-bottom: 50rpx;
       border: 1px solid #eee;
+      border-bottom: none;
       border-radius: 10rpx;
       box-shadow: 0 0 30rpx rgba(0, 0, 0, 0.05);
       overflow: hidden;
 
-      .row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 30rpx;
-        height: 100rpx;
-        border-bottom: 1px solid #eee;
-        background-color: #fff;
-        &:last-child {
-          border-bottom: none;
-        }
-
-        .left {
-          display: flex;
-          align-items: center;
-          .uni-icons {
-            color: $brand-theme-color !important;
-          }
-
-          /* #ifdef MP-WEIXIN */
-          uni-icons {
-            .uni-icons {
-              color: $brand-theme-color !important;
-            }
-          }
-          /* #endif */
-
-          // :deep() {
-          //   .uni-icons {
-          //     color: $brand-theme-color !important;
-          //   }
-          // }
-          .text {
-            margin-left: 20rpx;
-            color: #666;
-          }
+      .right {
+        .text {
+          font-size: 28rpx;
+          color: #aaa;
         }
       }
     }
