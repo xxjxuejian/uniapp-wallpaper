@@ -15,10 +15,18 @@ export function getNoticeListApi() {
   });
 }
 
-// 获取每日精选列表
+// 获取每日精选列表,随机9张图
 export function getDailySelectListApi() {
   return request({
     url: "/randomWall",
+  });
+}
+
+// 获取每日精选的每一张图的大图
+export function getDailySelectDetailApi(data = {}) {
+  return request({
+    url: "/detailWall",
+    data,
   });
 }
 
@@ -34,5 +42,13 @@ export function getCategorySelectListApi(data = {}) {
 export function getTopicSelectListApi() {
   return request({
     url: "/subjectList",
+  });
+}
+
+// 给图片评分
+export function setImageScoreApi(data = {}) {
+  return request({
+    url: "/setupScore",
+    data,
   });
 }

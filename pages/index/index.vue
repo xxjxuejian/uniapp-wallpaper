@@ -72,7 +72,7 @@
             class="item"
             v-for="item in dailySelectList"
             :key="item._id"
-            @click="handlePreview">
+            @click="handlePreview(item._id)">
             <image :src="item.smallPicurl" mode="aspectFill"></image>
           </view>
         </scroll-view>
@@ -155,8 +155,16 @@ function getDailySelectList() {
   });
 }
 getDailySelectList();
-const handlePreview = () => {
-  console.log("yulan ");
+
+// 跳转到预览页面
+const handlePreview = (id) => {
+  // 保存到本地存储中，后续使用
+  // uni.setStorageSync("storgClassList", dailySelectList.value);
+
+  // 跳转非 tabBar 的页面的路径
+  uni.navigateTo({
+    url: "/pages/preview/index?id=" + id,
+  });
 };
 
 // 获取分类精选
@@ -244,6 +252,13 @@ getCategorySelectList();
     .change {
       display: flex;
       align-items: center;
+      font-size: 32rpx;
+      color: #888;
+      :deep() {
+        .uni-icons {
+          color: #888 !important;
+        }
+      }
       .text {
         margin-left: 4rpx;
       }

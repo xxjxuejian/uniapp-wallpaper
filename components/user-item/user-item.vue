@@ -1,7 +1,7 @@
 <template>
   <view class="userItem">
     <view class="left">
-      <uni-icons class="icon" :type="icon" size="20"></uni-icons>
+      <uni-icons :type="icon" size="20"></uni-icons>
       <text class="title">{{ title }}</text>
     </view>
 
@@ -69,9 +69,12 @@ const handleContact = () => {
     display: flex;
     align-items: center;
     // 在h5中uni-icons类是直接在加这个元素上的，但是在微信中，uni-icons类是该元素内部的一个元素上的，所以选不中
-    .icon {
-      color: $brand-theme-color !important;
+    :deep() {
+      .uni-icons {
+        color: $brand-theme-color !important;
+      }
     }
+
     .title {
       margin-left: 20rpx;
       color: #666;
