@@ -14,7 +14,10 @@
 		 -->
     <view class="mask" v-show="maskState">
       <!-- 返回按钮 -->
-      <view class="goBack" @click="handleGoBack">
+      <view
+        class="goBack"
+        @click="handleGoBack"
+        :style="{ top: statusBarHeight + 'px' }">
         <uni-icons type="back" color="#fff" size="20"></uni-icons>
       </view>
 
@@ -152,6 +155,8 @@
 
 <script setup>
 import { getDailySelectDetailApi, setImageScoreApi } from "@/api/home.js";
+import { useSystemInfo } from "@/utils/system.js";
+const { statusBarHeight } = useSystemInfo();
 
 const curImageInfo = ref(null); // 保存当前图片的信息
 const maskState = ref(true); // 控制是否显示mask层

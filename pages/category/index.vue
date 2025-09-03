@@ -1,5 +1,6 @@
 <template>
   <view class="category pageBg">
+    <custom-nav-bar title="分类"></custom-nav-bar>
     <view class="category-list">
       <category-item
         v-for="item in categoryList"

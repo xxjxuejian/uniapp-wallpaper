@@ -46,6 +46,12 @@
       "style": {
         "navigationBarTitleText": "通知"
       }
+    },
+    {
+      "path": "pages/search/index",
+      "style": {
+        "navigationBarTitleText": "搜索"
+      }
     }
   ],
   "globalStyle": {

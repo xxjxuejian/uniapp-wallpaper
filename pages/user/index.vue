@@ -1,5 +1,7 @@
 <template>
   <view class="user pageBg">
+    <!-- 占位盒子 -->
+    <view :style="{ height: statusBarHeight + titleBarHeight + 'px' }"></view>
     <!-- 用户信息 -->
     <view class="user-info">
       <view class="avatar">
@@ -118,6 +120,8 @@
 </template>
 
 <script setup>
+import { useSystemInfo } from "@/utils/system.js";
+const { statusBarHeight, titleBarHeight } = useSystemInfo();
 const userInfo = ref(null);
 
 const handleLogout = () => {

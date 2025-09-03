@@ -1,5 +1,7 @@
 <template>
   <view class="home pageBg">
+    <custom-nav-bar title="推荐"></custom-nav-bar>
+
     <!-- 轮播图 -->
     <view class="banner">
       <swiper
