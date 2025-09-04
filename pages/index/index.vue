@@ -34,6 +34,7 @@
       </swiper>
     </view>
 
+    <!-- 通知公告 -->
     <view class="notice">
       <view class="left flex-center">
         <uni-icons type="sound-filled" size="20"></uni-icons>
@@ -161,8 +162,7 @@ getDailySelectList();
 // 跳转到预览页面
 const handlePreview = (id) => {
   // 保存到本地存储中，后续使用
-  // uni.setStorageSync("storgClassList", dailySelectList.value);
-
+  uni.setStorageSync("previewList", dailySelectList.value);
   // 跳转非 tabBar 的页面的路径
   uni.navigateTo({
     url: "/pages/preview/index?id=" + id,

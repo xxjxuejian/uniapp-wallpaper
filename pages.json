@@ -48,6 +48,12 @@
       }
     },
     {
+      "path": "pages/notice/detail",
+      "style": {
+        "navigationBarTitleText": "通知详情"
+      }
+    },
+    {
       "path": "pages/search/index",
       "style": {
         "navigationBarTitleText": "搜索"

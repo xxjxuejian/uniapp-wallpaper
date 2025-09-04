@@ -1,5 +1,5 @@
 <template>
-  <view class="notice">通知</view>
+  <view class="notice">通知列表</view>
 </template>
 
 <script setup></script>

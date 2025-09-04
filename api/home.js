@@ -52,3 +52,11 @@ export function setImageScoreApi(data = {}) {
     data,
   });
 }
+
+// 获取通知公告详情
+export function getNoticeDetailApi(data = {}) {
+  return request({
+    url: "/wallNewsDetail",
+    data,
+  });
+}

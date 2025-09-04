@@ -1,9 +1,19 @@
 <template>
   <view class="preview">
-    <swiper circular>
-      <swiper-item>
+    <!-- <swiper circular @change="handleIndexChange" :current="curIndex">
+      <swiper-item v-for="item in previewList" :key="item._id">
         <image
-          src="@/common/images/preview1.jpg"
+          :src="item.picUrl"
+          mode="aspectFill"
+          @click="handleMaskState"></image>
+      </swiper-item>
+    </swiper> -->
+
+    <swiper circular @change="handleIndexChange" :current="curIndex">
+      <swiper-item v-for="(item, index) in previewList" :key="item._id">
+        <image
+          v-if="loadedIndexSet.has(index)"
+          :src="item.picUrl"
           mode="aspectFill"
           @click="handleMaskState"></image>
       </swiper-item>
@@ -22,7 +32,7 @@
       </view>
 
       <!-- 日期时间 -->
-      <view class="count">1 / 2</view>
+      <view class="count">{{ curIndex + 1 }} / {{ previewList.length }}</view>
       <view class="time">
         <uni-dateformat :date="new Date()" format="hh:mm"></uni-dateformat>
       </view>
@@ -38,11 +48,18 @@
         </view>
 
         <view class="box" @click="handleOpenScorePop">
-          <uni-icons type="star" size="28"></uni-icons>
-          <view class="text">5分</view>
+          <uni-icons
+            v-if="curImageInfo?.userScore"
+            type="star-filled"
+            size="28"
+            color="#efce4a"></uni-icons>
+          <uni-icons v-else type="star" size="28"></uni-icons>
+          <view class="text">
+            {{ curImageInfo?.userScore || curImageInfo?.score }}分
+          </view>
         </view>
 
-        <view class="box">
+        <view class="box" @click="handleSaveImage">
           <uni-icons type="download" size="23"></uni-icons>
           <view class="text">下载</view>
         </view>
@@ -79,12 +96,22 @@
               <view class="row">
                 <text class="label">评分：</text>
                 <view class="value roteBox">
-                  <uni-rate
-                    readonly
-                    touchable
-                    :value="curImageInfo?.score"
-                    size="16" />
-                  <text class="score">{{ curImageInfo?.score }}分</text>
+                  <template v-if="curImageInfo?.userScore">
+                    <uni-rate
+                      readonly
+                      touchable
+                      :value="curImageInfo?.userScore"
+                      size="16" />
+                    <text class="score">{{ curImageInfo?.userScore }}分</text>
+                  </template>
+                  <template v-else>
+                    <uni-rate
+                      readonly
+                      touchable
+                      :value="curImageInfo?.score"
+                      size="16" />
+                    <text class="score">{{ curImageInfo?.score }}分</text>
+                  </template>
                 </view>
               </view>
 
@@ -122,7 +149,9 @@
         <view class="scorePopup">
           <view class="popHeader">
             <view></view>
-            <view class="title">{{ isScore ? "评分过了~" : "壁纸评分" }}</view>
+            <view class="title">
+              {{ curImageInfo?.userScore ? "评分过了~" : "壁纸评分" }}
+            </view>
             <view class="close" @click="handleCloseScorePop">
               <uni-icons type="closeempty" size="18" color="#999"></uni-icons>
             </view>
@@ -130,17 +159,25 @@
 
           <view class="content">
             <uni-rate
+              v-if="curImageInfo?.userScore"
+              readonly
+              touchable
+              :value="curImageInfo?.userScore"
+              size="16" />
+            <uni-rate
+              v-else
               v-model="userScore"
               allowHalf
-              :disabled="isScore"
               disabled-color="#FFCA3E" />
-            <text class="text">{{ userScore }}分</text>
+            <text class="text">
+              {{ curImageInfo?.userScore || userScore }}分
+            </text>
           </view>
 
           <view class="footer">
             <button
               @click="handleSubmitUserScore"
-              :disabled="!userScore || isScore"
+              :disabled="curImageInfo?.userScore || !userScore"
               type="default"
               size="mini"
               plain>
@@ -156,12 +193,28 @@
 <script setup>
 import { getDailySelectDetailApi, setImageScoreApi } from "@/api/home.js";
 import { useSystemInfo } from "@/utils/system.js";
+
 const { statusBarHeight } = useSystemInfo();
 
+const previewList = ref([]); // 所有预览图片列表
 const curImageInfo = ref(null); // 保存当前图片的信息
+const curIndex = ref(-1); // 当前图片在数组中的索引值
 const maskState = ref(true); // 控制是否显示mask层
 const infoPopRef = ref(null); // 图片信息弹窗组件
 
+const loadedIndexSet = new Set(); // 保存已经访问过的图片索引
+
+// const scoreHash = {}; // 记录每一张图的评分值
+// 当轮播图切换时
+const handleIndexChange = (e) => {
+  // 最新的索引值
+  curIndex.value = e.detail.current;
+  // 当前图片信息
+  curImageInfo.value = previewList.value[curIndex.value];
+  preLoad();
+};
+
+// "65615d42a7c432f4171a1c10"
 // 返回按钮
 const handleGoBack = () => {
   uni.navigateBack({
@@ -179,7 +232,7 @@ const handleMaskState = () => {
   maskState.value = !maskState.value;
 };
 
-// 获取每日推荐的大图详情
+// 获取每日推荐的 图片详情
 async function getDailySelectDetail(picId) {
   const res = await getDailySelectDetailApi({
     id: picId,
@@ -199,7 +252,6 @@ const handleCloseInfoPop = () => {
 
 // 评分相关
 const userScore = ref(0); // 用户对当前图片的评分；
-const isScore = ref(false); // 当前图片是否已经评分了
 const scorePopRef = ref(null); // 图片评分弹窗组件
 // 打开评分弹窗
 const handleOpenScorePop = () => {
@@ -208,6 +260,7 @@ const handleOpenScorePop = () => {
 // 关闭评分弹窗
 const handleCloseScorePop = () => {
   scorePopRef.value.close();
+  userScore.value = 0;
 };
 // 提交用户评分
 const handleSubmitUserScore = async () => {
@@ -226,7 +279,20 @@ const handleSubmitUserScore = async () => {
         title: "评分成功",
         icon: "none",
       });
-      isScore.value = true;
+
+      console.log("评分成功", res);
+
+      // 评分成功以后，保存当前图片的评分，之后就不能在评分了
+      // 评分成功以后，他的接口只返回了一个图片id,但是实际上在下一次请求图片列表时，有一个userScore值，表示用户评分
+      // 如果没有这个字段，就表示用户没有评分。
+      // 更新对应图片的数据
+      previewList.value[curIndex.value].userScore = userScore.value;
+      // 重新获取一次当前图片
+      curImageInfo.value = previewList.value[curIndex.value];
+
+      // 重新缓存
+      uni.setStorageSync("previewList", previewList.value);
+      // 关闭评分弹窗
       handleCloseScorePop();
     }
   } catch (error) {
@@ -237,10 +303,136 @@ const handleSubmitUserScore = async () => {
 };
 
 onLoad((options) => {
-  const id = options.id;
-  console.log("id", id);
-  if (id) getDailySelectDetail(id);
+  const picId = options.id;
+
+  // 从缓存中取出列表数据
+  const data = uni.getStorageSync("previewList") || [];
+  previewList.value = data.map((item) => {
+    return {
+      ...item,
+      picUrl: item.smallPicurl.replace("_small.webp", ".jpg"),
+    };
+  });
+  // 根据当前点击的图片id，确认在数组中的索引index
+  curIndex.value = previewList.value.findIndex((item) => {
+    return item._id === picId;
+  });
+  // 获取索引值以后,获取这张图片信息;轮播图跳转到当前索引位置
+  if (curIndex.value !== -1) {
+    curImageInfo.value = previewList.value[curIndex.value];
+    preLoad();
+  }
+
+  // if (picId) getDailySelectDetail(picId);
 });
+
+// 预加载
+function preLoad() {
+  // 加入当前图片索引
+  if (!loadedIndexSet.has(curIndex.value)) {
+    loadedIndexSet.add(curIndex.value);
+  }
+  // 加入前一张和后一张图片索引
+  let prev =
+    (curIndex.value - 1 + previewList.value.length) % previewList.value.length;
+  let next = (curIndex.value + 1) % previewList.value.length;
+  if (!loadedIndexSet.has(prev)) loadedIndexSet.add(prev);
+  if (!loadedIndexSet.has(next)) loadedIndexSet.add(next);
+}
+
+// 点击下载图片，保存到手机相册
+const handleSaveImage = async () => {
+  // #ifdef H5
+  uni.showModal({
+    title: "下载提示",
+    content: "请长按保存壁纸",
+    showCancel: false,
+  });
+  // #endif
+
+  // #ifndef H5
+  uni.showLoading({
+    title: "下载中...",
+    mask: true,
+  });
+  const localPath = await getImageLocalPath();
+  uni.saveImageToPhotosAlbum({
+    filePath: localPath,
+    // 成功保存
+    success: (res) => {
+      console.log("保存成功", res);
+      uni.showToast({
+        title: "保存成功，请到相册查看",
+        icon: "none",
+      });
+    },
+    // 取消保存以及 拒绝授权 都会进入这个回调
+    fail: (err) => {
+      if (err.errMsg == "saveImageToPhotosAlbum:fail cancel") {
+        uni.showToast({
+          title: "保存失败，请重新点击下载",
+          icon: "none",
+        });
+      }
+      // 拒绝授权,需要提示用户，需要通过授权
+      else {
+        // 对话框的确定或者取消，都是进入success的回调
+        uni.showModal({
+          title: "授权提示",
+          content: "需要授权保存到相册",
+          success: (res) => {
+            if (res.confirm) {
+              // 确认授权，打开设置进行授权
+              uni.openSetting({
+                success(res) {
+                  const anthRes = res.authSetting["scope.writePhotosAlbum"];
+                  if (anthRes) {
+                    uni.showToast({
+                      title: "获取授权成功",
+                      icon: "none",
+                    });
+                  } else {
+                    uni.showToast({
+                      title: "获取权限失败",
+                      icon: "none",
+                    });
+                  }
+                },
+              });
+            } else {
+              uni.showToast({
+                title: "拒绝授权",
+                icon: "none",
+              });
+            }
+          },
+        });
+      }
+    },
+    complete: () => {
+      uni.hideLoading();
+    },
+  });
+  // #endif
+};
+
+// getImageInfo全平台支持,获取图片信息
+function getImageLocalPath() {
+  return new Promise((resolve, reject) => {
+    uni.getImageInfo({
+      src: curImageInfo.value.picUrl,
+      success: (res) => {
+        // 图片的本地路径
+        const path = res.path;
+        console.log("图片的本地路径", path);
+        resolve(path);
+      },
+      fail: (err) => {
+        reject(err);
+      },
+    });
+  });
+}
 </script>
 
 <style lang="scss" scoped>
@@ -318,7 +510,7 @@ onLoad((options) => {
       display: flex;
       justify-content: space-around;
       align-items: center;
-      box-shadow: 0 2rpx 0 rgba(0, 0, 0, 0.1);
+      // box-shadow: 0 2rpx 0 rgba(0, 0, 0, 0.1);
       backdrop-filter: blur(20rpx);
 
       .box {
