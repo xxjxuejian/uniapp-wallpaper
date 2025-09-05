@@ -32,6 +32,7 @@ import { getNoticeDetailApi } from "@/api/home.js";
 
 const detail = ref({}); // 通知详情
 let noticeId; // 通知id
+let title; // 页面标题
 
 async function getNoticeDetail(id) {
   const res = await getNoticeDetailApi({
@@ -45,8 +46,14 @@ async function getNoticeDetail(id) {
 
 onLoad((e) => {
   noticeId = e.id;
+  title = e.name;
   if (noticeId) {
     getNoticeDetail(noticeId);
+  }
+  if (title) {
+    uni.setNavigationBarTitle({
+      title: title,
+    });
   }
 });
 </script>

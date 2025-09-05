@@ -68,3 +68,11 @@ export function downloadPicApi(data = {}) {
     data,
   });
 }
+
+// 搜索
+export function getSearchApi(data = {}) {
+  return request({
+    url: "/searchWall",
+    data,
+  });
+}

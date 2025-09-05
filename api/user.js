@@ -7,3 +7,10 @@ export function getUserHisListApi(data = {}) {
     data,
   });
 }
+
+// 获取用户信息
+export function getUserInfoApi() {
+  return request({
+    url: "/userInfo",
+  });
+}

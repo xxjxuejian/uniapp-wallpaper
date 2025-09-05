@@ -145,7 +145,7 @@ getHomeBanner();
 function getNoticeList() {
   getNoticeListApi().then((res) => {
     noticeList.value = res.data;
-    // console.log("notice", noticeList.value);
+    console.log("通知公告", noticeList.value);
   });
 }
 getNoticeList();

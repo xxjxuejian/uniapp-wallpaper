@@ -39,13 +39,10 @@ const queryParams = {
 
 // 获取详细图片列表
 async function getDetailList() {
-  let res = undefined;
+  let res;
   // 如果id存在,调用这个函数
-  if (queryParams.classid) {
-    res = await getCateDetailListApi(queryParams);
-  } else {
-    res = await getUserHisListApi(queryParams);
-  }
+  if (queryParams.classid) res = await getCateDetailListApi(queryParams);
+  if (queryParams.type) res = await getUserHisListApi(queryParams);
   const data = res.data;
   // 如果type存在,调用这个函数
   console.log("图片列表", data);
@@ -54,7 +51,6 @@ async function getDetailList() {
   if (queryParams.pageSize > data.length) {
     noData.value = true;
   }
-
   detailList.value = [...detailList.value, ...res.data];
 }
 
@@ -92,7 +88,6 @@ onReachBottom(() => {
 const handleGoPreview = (id) => {
   // 跳转之前，把当前的图片列表保存，到预览页就不用请求数据了
   uni.setStorageSync("previewList", detailList.value);
-
   uni.navigateTo({
     url: "/pages/preview/index?id=" + id,
   });

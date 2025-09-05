@@ -7,8 +7,16 @@
       <view class="avatar">
         <image src="../../static/images/xxmLogo.png" mode="aspectFill"></image>
       </view>
-      <view class="info">
-        <view class="name">点击登录</view>
+
+      <!-- <view class="login">点击登录</view> -->
+      <view class="ip">{{ userInfo.IP }}</view>
+      <view class="address">
+        来自于：
+        {{
+          userInfo.address.city ||
+          userInfo.address.province ||
+          userInfo.address.country
+        }}
       </view>
     </view>
 
@@ -22,7 +30,7 @@
               <view class="text">我的下载</view>
             </view>
             <view class="right">
-              <view class="text">2</view>
+              <view class="text">{{ userInfo.downloadSize }}</view>
               <uni-icons type="right" size="15" color="#aaa"></uni-icons>
             </view>
           </view>
@@ -34,7 +42,7 @@
               <view class="text">我的评分</view>
             </view>
             <view class="right">
-              <view class="text">21</view>
+              <view class="text">{{ userInfo.scoreSize }}</view>
               <uni-icons type="right" size="15" color="#aaa"></uni-icons>
             </view>
           </view>
@@ -53,7 +61,8 @@
       </view>
 
       <view class="section">
-        <navigator url="/pages/notice/index">
+        <navigator
+          url="/pages/notice/detail?id=653507c6466d417a3718e94b&name=订阅更新">
           <view class="row">
             <view class="left">
               <uni-icons type="notification-filled" size="20"></uni-icons>
@@ -64,7 +73,8 @@
             </view>
           </view>
         </navigator>
-        <navigator url="/pages/notice/index">
+        <navigator
+          url="/pages/notice/detail?id=6536358ce0ec19c8d67fbe82&name=常见问题">
           <view class="row">
             <view class="left">
               <uni-icons type="flag-filled" size="20"></uni-icons>
@@ -104,7 +114,7 @@
         </navigator>
       </view>
 
-      <view class="section">
+      <view class="section" v-if="isLogin">
         <view class="row" @click="handleLogout">
           <view class="left">
             <uni-icons type="gear-filled" size="20"></uni-icons>
@@ -121,8 +131,35 @@
 
 <script setup>
 import { useSystemInfo } from "@/utils/system.js";
+import { getUserInfoApi } from "@/api/user.js";
+
 const { statusBarHeight, titleBarHeight } = useSystemInfo();
-const userInfo = ref(null);
+
+const isLogin = ref(false); // 用户是否登录
+// 用户信息
+const userInfo = ref({
+  IP: "",
+  address: {},
+  downloadSize: 0,
+  scoreSize: 0,
+});
+
+function getUserInfo() {
+  uni.showLoading({
+    title: "加载中...",
+    mask: true,
+  });
+  getUserInfoApi()
+    .then((res) => {
+      console.log("用户信息", res);
+      userInfo.value = res.data;
+    })
+    .finally(() => {
+      uni.hideLoading();
+    });
+}
+
+getUserInfo();
 
 const handleLogout = () => {
   console.log("退出登录");
@@ -156,12 +193,19 @@ const handleContact = () => {
       }
     }
 
-    .info {
-      padding: 20rpx 0;
-      .name {
-        font-size: 44rpx;
-        color: #333;
-      }
+    .login {
+      font-size: 44rpx;
+      color: #333;
+    }
+
+    .ip {
+      font-size: 44rpx;
+      color: #333;
+      padding: 20rpx 0 5rpx;
+    }
+    .address {
+      font-size: 28rpx;
+      color: #aaa;
     }
   }
 
