@@ -62,9 +62,9 @@
       <common-title>
         <template #name>每日推荐</template>
         <template #custom>
-          <view class="change">
+          <view class="change" @click="handleChangeDailySelect">
             <uni-icons type="loop" size="18" color="#000"></uni-icons>
-            <text class="text">换一换</text>
+            <text class="text">换一批</text>
           </view>
         </template>
       </common-title>
@@ -159,6 +159,12 @@ function getDailySelectList() {
 }
 getDailySelectList();
 
+// 每日推荐换一批:设置一个节流，或者直接一个定时器
+let timer = null;
+const handleChangeDailySelect = () => {
+  // 1. 节流；2. 动画；3. 骨架屏；4. 回调地狱优化
+};
+
 // 跳转到预览页面
 const handlePreview = (id) => {
   // 保存到本地存储中，后续使用
@@ -179,6 +185,25 @@ function getCategorySelectList() {
   });
 }
 getCategorySelectList();
+
+// #ifdef MP
+// 分享给好友
+// 此事件需要 return 一个Object，用于自定义分享内容。
+onShareAppMessage((e) => {
+  console.log("触发分享", e);
+  return {
+    title: "壁纸小程序",
+    path: "/pages/index/index",
+  };
+});
+
+// 这种分享是通过用户点击 小程序右上角分享按钮实现的，
+// 另外也可以是用户点击单独的按钮实现,那就需要使用其它的api了:uni.share()
+// 没有微信认证,目前无法分享到朋友圈
+// onShareTimeline((e) => {
+//   console.log("分享到朋友圈", e);
+// });
+// #endif
 </script>
 
 <style lang="scss" scoped>

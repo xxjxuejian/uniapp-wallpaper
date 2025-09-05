@@ -28,7 +28,12 @@
         class="goBack"
         @click="handleGoBack"
         :style="{ top: statusBarHeight + 'px' }">
-        <uni-icons type="back" color="#fff" size="20"></uni-icons>
+        <uni-icons
+          v-if="isUserShare"
+          type="home"
+          color="#fff"
+          size="20"></uni-icons>
+        <uni-icons v-else type="back" color="#fff" size="20"></uni-icons>
       </view>
 
       <!-- 日期时间 -->
@@ -66,7 +71,7 @@
       </view>
 
       <!-- 信息弹窗 -->
-      <uni-popup ref="infoPopRef" type="bottom">
+      <uni-popup ref="infoPopRef" type="bottom" :safe-area="false">
         <view class="infoPopup">
           <view class="popHeader">
             <!-- 布局占位 用 -->
@@ -138,6 +143,7 @@
                 声明：本图片来用户投稿，非商业使用，用于免费学习交流，如侵犯了您的权益，您可以拷贝壁纸ID举报至平台，邮箱513894357@qq.com，管理将删除侵权壁纸，维护您的权益。
               </view>
 
+              <!-- 底部安全区域 -->
               <view class="safe-area-inset-bottom"></view>
             </view>
           </scroll-view>
@@ -150,7 +156,7 @@
           <view class="popHeader">
             <view></view>
             <view class="title">
-              {{ curImageInfo?.userScore ? "评分过了~" : "壁纸评分" }}
+              {{ curImageInfo?.userScore ? "已经评过分了~" : "壁纸评分" }}
             </view>
             <view class="close" @click="handleCloseScorePop">
               <uni-icons type="closeempty" size="18" color="#999"></uni-icons>
@@ -191,7 +197,11 @@
 </template>
 
 <script setup>
-import { getDailySelectDetailApi, setImageScoreApi } from "@/api/home.js";
+import {
+  getImageDetailApi,
+  setImageScoreApi,
+  downloadPicApi,
+} from "@/api/home.js";
 import { useSystemInfo } from "@/utils/system.js";
 
 const { statusBarHeight } = useSystemInfo();
@@ -203,8 +213,82 @@ const maskState = ref(true); // 控制是否显示mask层
 const infoPopRef = ref(null); // 图片信息弹窗组件
 
 const loadedIndexSet = new Set(); // 保存已经访问过的图片索引
-
+let picId; // 图片id
+const isUserShare = ref(false); // 用户是否通过其它用户分享进入该页面
 // const scoreHash = {}; // 记录每一张图的评分值
+
+function loadDataFromStorage() {
+  // 从缓存中取出列表数据
+  const data = uni.getStorageSync("previewList") || [];
+  previewList.value = data.map((item) => {
+    return {
+      ...item,
+      picUrl: item.smallPicurl.replace("_small.webp", ".jpg"),
+    };
+  });
+}
+
+// 获取单个图片详情
+async function getImageDetail(picId) {
+  const res = await getImageDetailApi({
+    id: picId,
+  });
+  console.log("图片信息", res.data);
+  // curImageInfo.value = res.data[0];
+  previewList.value = res.data.map((item) => {
+    return {
+      ...item,
+      picUrl: item.smallPicurl.replace("_small.webp", ".jpg"),
+    };
+  });
+}
+
+onLoad(async (options) => {
+  picId = options.id;
+  // 如果用户是通过其它用户分享进入的，直接请求数据
+  if (options.type === "userShare") {
+    console.log("用户通过他人分享进入");
+    isUserShare.value = true;
+    if (picId) await getImageDetail(picId);
+  } else {
+    loadDataFromStorage();
+  }
+
+  // 根据当前点击的图片id，确认在数组中的索引index
+  curIndex.value = previewList.value.findIndex((item) => {
+    return item._id === picId;
+  });
+  // 获取索引值以后,获取这张图片信息;轮播图跳转到当前索引位置
+  if (curIndex.value !== -1) {
+    curImageInfo.value = previewList.value[curIndex.value];
+    preLoad();
+  }
+});
+
+// "65615d42a7c432f4171a1c10"
+// 返回按钮
+const handleGoBack = () => {
+  // 处理用户通过分享进入小程序以后，返回出错的情况 ，方法一
+  // uni.navigateBack({
+  //   success: () => {},
+  //   // 这是针对用户通过分享进入小程序以后，返回出错的情况
+  //   fail: (err) => {
+  //     uni.reLaunch({
+  //       url: "/pages/index/index",
+  //     });
+  //   },
+  // });
+
+  // 方法二：通过变量isUserShare.value值选择不同的逻辑
+  if (isUserShare.value) {
+    uni.reLaunch({
+      url: "/pages/index/index",
+    });
+  } else {
+    uni.navigateBack();
+  }
+};
+
 // 当轮播图切换时
 const handleIndexChange = (e) => {
   // 最新的索引值
@@ -214,32 +298,10 @@ const handleIndexChange = (e) => {
   preLoad();
 };
 
-// "65615d42a7c432f4171a1c10"
-// 返回按钮
-const handleGoBack = () => {
-  uni.navigateBack({
-    success: () => {},
-    fail: (err) => {
-      uni.reLaunch({
-        url: "/pages/index/index",
-      });
-    },
-  });
-};
-
 // mask层显示与隐藏
 const handleMaskState = () => {
   maskState.value = !maskState.value;
 };
-
-// 获取每日推荐的 图片详情
-async function getDailySelectDetail(picId) {
-  const res = await getDailySelectDetailApi({
-    id: picId,
-  });
-  console.log("图片信息", res.data);
-  curImageInfo.value = res.data[0];
-}
 
 // 打开信息弹窗
 const handleOpenInfoPop = () => {
@@ -301,30 +363,6 @@ const handleSubmitUserScore = async () => {
     handleCloseScorePop();
   }
 };
-
-onLoad((options) => {
-  const picId = options.id;
-
-  // 从缓存中取出列表数据
-  const data = uni.getStorageSync("previewList") || [];
-  previewList.value = data.map((item) => {
-    return {
-      ...item,
-      picUrl: item.smallPicurl.replace("_small.webp", ".jpg"),
-    };
-  });
-  // 根据当前点击的图片id，确认在数组中的索引index
-  curIndex.value = previewList.value.findIndex((item) => {
-    return item._id === picId;
-  });
-  // 获取索引值以后,获取这张图片信息;轮播图跳转到当前索引位置
-  if (curIndex.value !== -1) {
-    curImageInfo.value = previewList.value[curIndex.value];
-    preLoad();
-  }
-
-  // if (picId) getDailySelectDetail(picId);
-});
 
 // 预加载
 function preLoad() {
@@ -433,6 +471,18 @@ function getImageLocalPath() {
     });
   });
 }
+
+// #ifdef MP
+// 这个页面中图片数据来自之前页面的缓存,如果是用户分享给新用户,那么新用户没有缓存,看不到图片
+// type=userShare是在用户分享时传递一个参数，当页面加载时，检查这个参数，如果是通过分享进入的，就请求一次数据
+onShareAppMessage((e) => {
+  console.log("触发分享", e);
+  return {
+    title: `壁纸小程序`,
+    path: `/pages/preview/index?id=${picId}&type=userShare`,
+  };
+});
+// #endif
 </script>
 
 <style lang="scss" scoped>

@@ -26,14 +26,6 @@
 </template>
 
 <script setup>
-// import {
-//   onLoad,
-//   onUnload,
-//   onReachBottom,
-//   onShareAppMessage,
-//   onShareTimeline,
-// } from "@dcloudio/uni-app";
-
 import { getCateDetailListApi } from "@/api/category.js";
 import { getUserHisListApi } from "@/api/user.js";
 
@@ -62,17 +54,6 @@ async function getDetailList() {
   if (queryParams.pageSize > data.length) {
     noData.value = true;
   }
-
-  // data.map((item)=>{
-  // 	return {
-
-  // 		...item,
-  // 		userScore:item.userScore || undefined
-  // 	}
-  // })
-
-  // 获取评分数据，是评分以后保存在本地存储中的
-  // 但是这种方法不够合理，用户清除数据，之前已经评分过的记录就消失了
 
   detailList.value = [...detailList.value, ...res.data];
 }
@@ -116,6 +97,16 @@ const handleGoPreview = (id) => {
     url: "/pages/preview/index?id=" + id,
   });
 };
+
+// #ifdef MP
+onShareAppMessage((e) => {
+  console.log("触发分享", e);
+  return {
+    title: `壁纸小程序-${pageTitleName}`,
+    path: `/pages/category-detail/index?id=${queryParams.classid}&name=${pageTitleName}`,
+  };
+});
+// #endif
 </script>
 
 <style lang="scss" scoped>

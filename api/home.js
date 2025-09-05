@@ -22,8 +22,8 @@ export function getDailySelectListApi() {
   });
 }
 
-// 获取每日精选的每一张图的大图
-export function getDailySelectDetailApi(data = {}) {
+// 获取每日精选/分类精选/其它的每一张图的详情
+export function getImageDetailApi(data = {}) {
   return request({
     url: "/detailWall",
     data,
@@ -57,6 +57,14 @@ export function setImageScoreApi(data = {}) {
 export function getNoticeDetailApi(data = {}) {
   return request({
     url: "/wallNewsDetail",
+    data,
+  });
+}
+
+// 壁纸下载
+export function downloadPicApi(data = {}) {
+  return request({
+    url: "/downloadWall",
     data,
   });
 }
