@@ -1,4 +1,5 @@
 const BASE_URL = "https://tea.qingnian8.com/api/bizhi";
+// const BASE_URL = "/api";
 const ACCESS_KEY = "xxj9824";
 
 export function request(config = {}) {
