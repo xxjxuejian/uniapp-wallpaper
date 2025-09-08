@@ -106,15 +106,17 @@
     </view>
 
     <!-- 专题精选 -->
-    <view class="topic-select">
-      <common-title>
-        <!-- 专题页  -->
-        <template #name>专题精选</template>
+    <!-- <view class="topic-select">
+      <common-title> -->
+    <!-- 专题页  -->
+    <!-- <template #name>专题精选</template>
         <template #custom>
           <navigator url="" open-type="reLaunch" class="more">More+</navigator>
         </template>
       </common-title>
-    </view>
+    </view> -->
+
+    <view class="footer"></view>
   </view>
 </template>
 
@@ -163,6 +165,7 @@ getDailySelectList();
 let timer = null;
 const handleChangeDailySelect = () => {
   // 1. 节流；2. 动画；3. 骨架屏；4. 回调地狱优化
+  getDailySelectList();
 };
 
 // 跳转到预览页面
@@ -340,6 +343,11 @@ onShareAppMessage((e) => {
       font-size: 32rpx;
       color: #888;
     }
+  }
+
+  // 页脚
+  .footer {
+    height: 50rpx;
   }
 }
 </style>
