@@ -165,7 +165,8 @@ getDailySelectList();
 let timer = null;
 const handleChangeDailySelect = () => {
   // 1. 节流；2. 动画；3. 骨架屏；4. 回调地狱优化
-  getDailySelectList();
+  // getDailySelectList();
+  console.log("换一批");
 };
 
 // 跳转到预览页面
