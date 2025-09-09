@@ -1,7 +1,17 @@
 <script>
+import Track from "@/utils/track";
+import { downloadPicApi } from "@/api/home.js";
+
+// 埋点函数映射表
+const apiMap = {
+  downloadPicApi,
+};
+
 export default {
   onLaunch: function () {
     console.log("App Launch");
+    // 补发本地缓存的埋点
+    Track.flushReports(apiMap);
   },
   onShow: function () {
     console.log("App Show");

@@ -209,6 +209,7 @@ import {
   openSetting,
   showModal,
 } from "@/utils/uniPromisify.js";
+import Track from "@/utils/track";
 
 const { statusBarHeight } = useSystemInfo();
 
@@ -384,101 +385,6 @@ function preLoad() {
   if (!loadedIndexSet.has(next)) loadedIndexSet.add(next);
 }
 
-// // 点击下载图片，保存到手机相册
-// const handleSaveImage = async () => {
-//   // #ifdef H5
-//   uni.showModal({
-//     title: "下载提示",
-//     content: "请长按保存壁纸",
-//     showCancel: false,
-//   });
-//   // #endif
-
-//   // #ifndef H5
-//   uni.showLoading({
-//     title: "下载中...",
-//     mask: true,
-//   });
-//   const localPath = await getImageLocalPath();
-
-//   uni.saveImageToPhotosAlbum({
-//     filePath: localPath,
-//     // 成功保存
-//     success: (res) => {
-//       console.log("保存成功", res);
-//       uni.showToast({
-//         title: "保存成功，请到相册查看",
-//         icon: "none",
-//       });
-//     },
-//     // 取消保存以及 拒绝授权 都会进入这个回调
-//     fail: (err) => {
-//       if (err.errMsg == "saveImageToPhotosAlbum:fail cancel") {
-//         uni.showToast({
-//           title: "保存失败，请重新点击下载",
-//           icon: "none",
-//         });
-//       }
-//       // 拒绝授权,需要提示用户，需要通过授权
-//       else {
-//         // 对话框的确定或者取消，都是进入success的回调
-//         uni.showModal({
-//           title: "授权提示",
-//           content: "需要授权保存到相册",
-//           success: (res) => {
-//             if (res.confirm) {
-//               // 确认授权，打开设置进行授权
-//               uni.openSetting({
-//                 success(res) {
-//                   const anthRes = res.authSetting["scope.writePhotosAlbum"];
-//                   if (anthRes) {
-//                     uni.showToast({
-//                       title: "获取授权成功",
-//                       icon: "none",
-//                     });
-//                   } else {
-//                     uni.showToast({
-//                       title: "获取权限失败",
-//                       icon: "none",
-//                     });
-//                   }
-//                 },
-//               });
-//             } else {
-//               uni.showToast({
-//                 title: "拒绝授权",
-//                 icon: "none",
-//               });
-//             }
-//           },
-//         });
-//       }
-//     },
-//     complete: () => {
-//       uni.hideLoading();
-//     },
-//   });
-//   // #endif
-// };
-
-// getImageInfo全平台支持,获取图片信息
-// function getImageLocalPath() {
-//   return new Promise((resolve, reject) => {
-//     uni.getImageInfo({
-//       src: curImageInfo.value.picUrl,
-//       success: (res) => {
-//         // 图片的本地路径
-//         const path = res.path;
-//         console.log("图片的本地路径", path);
-//         resolve(path);
-//       },
-//       fail: (err) => {
-//         reject(err);
-//       },
-//     });
-//   });
-// }
-
 // #ifdef MP
 // 这个页面中图片数据来自之前页面的缓存,如果是用户分享给新用户,那么新用户没有缓存,看不到图片
 // type=userShare是在用户分享时传递一个参数，当页面加载时，检查这个参数，如果是通过分享进入的，就请求一次数据
@@ -511,16 +417,22 @@ const handleSaveImage = async () => {
   try {
     uni.showLoading({
       title: "下载中...",
-      // mask: true,
+      mask: true,
     });
     // 获取图片信息
     const imgInfo = await getImageInfo(curImageInfo.value.picUrl);
 
     // 保存到相册
     await saveImageToAlbum(imgInfo.path);
+    // 用户体验：先告诉用户成功
     uni.showToast({
       title: "保存成功，请到相册查看",
       icon: "none",
+    });
+    // 图片保存成功后，上报一次下载埋点
+    Track.sendReport(downloadPicApi, {
+      classid: curImageInfo.value.classid,
+      wallId: curImageInfo.value._id,
     });
   } catch (err) {
     uni.hideLoading();
