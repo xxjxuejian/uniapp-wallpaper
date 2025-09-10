@@ -63,7 +63,12 @@
         <template #name>每日推荐</template>
         <template #custom>
           <view class="change" @click="handleChangeDailySelect">
-            <uni-icons type="loop" size="18" color="#000"></uni-icons>
+            <uni-icons type="loop" size="18"></uni-icons>
+            <!-- <uni-icons
+              custom-prefix="iconfont"
+              type="icon-shuaxin"
+              size="18"
+              color="#2a9d8e"></uni-icons> -->
             <text class="text">换一批</text>
           </view>
         </template>

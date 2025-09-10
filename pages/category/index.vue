@@ -9,10 +9,6 @@
       <custom-refresher :status="refresherStatus" />
     </template>
 
-    <!-- <template #top>
-      <custom-nav-bar title="分类"></custom-nav-bar>
-    </template> -->
-
     <custom-nav-bar title="分类"></custom-nav-bar>
     <view class="category pageBg">
       <view class="category-list">
@@ -25,7 +21,8 @@
     </view>
 
     <template #loadingMoreNoMore>
-      <!-- 此处的custom-nomore为demo中自定义的组件，非z-paging的内置组件，请在实际项目中自行创建。这里插入什么view，没有更多数据就显示什么view -->
+      <!-- 此处的custom-nomore为demo中自定义的组件，非z-paging的内置组件，请在实际项目中自行创建。
+			这里插入什么view，没有更多数据就显示什么view -->
       <custom-nomore />
     </template>
   </z-paging>
@@ -35,7 +32,7 @@
 import { getCategoryListApi } from "@/api/category.js";
 
 const paging = ref(null);
-
+const categoryList = ref([]); // 分类列表
 const queryList = (pageNo, pageSize) => {
   console.log("pageNo, pageSize", pageNo, pageSize);
   getCategoryListApi({
@@ -49,18 +46,6 @@ const queryList = (pageNo, pageSize) => {
       paging.value.complete(false);
     });
 };
-const categoryList = ref([]); // 分类列表
-const queryParams = {
-  pageNum: 1,
-  pageSize: 15,
-};
-const noMoreData = ref(false); // 是否有更多数据了
-
-// async function getCategoryList() {
-//   const res = await getCategoryListApi(queryParams);
-//   console.log("分类列表：", res);
-//   return res;
-// }
 
 // #ifdef MP
 onShareAppMessage((e) => {
