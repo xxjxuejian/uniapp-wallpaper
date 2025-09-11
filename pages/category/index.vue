@@ -1,51 +1,57 @@
 <template>
-  <z-paging
-    ref="paging"
-    v-model="categoryList"
-    @query="queryList"
-    :default-page-size="15">
-    <!-- 下拉刷新的加载动画与文本 -->
-    <template #refresher="{ refresherStatus }">
-      <custom-refresher :status="refresherStatus" />
-    </template>
-
-    <custom-nav-bar title="分类"></custom-nav-bar>
-    <view class="category pageBg">
-      <view class="category-list">
-        <category-item
-          v-for="item in categoryList"
-          :key="item._id"
-          :item="item"
-          class="item"></category-item>
-      </view>
+  <view class="category pageBg">
+    <!-- 加载中 -->
+    <view class="loadingLayout" v-if="!categoryList.length && !noMoreData">
+      <uni-load-more status="loading"></uni-load-more>
     </view>
 
-    <template #loadingMoreNoMore>
-      <!-- 此处的custom-nomore为demo中自定义的组件，非z-paging的内置组件，请在实际项目中自行创建。
-			这里插入什么view，没有更多数据就显示什么view -->
-      <custom-nomore />
-    </template>
-  </z-paging>
+    <custom-nav-bar title="分类"></custom-nav-bar>
+    <view class="category-list">
+      <category-item
+        v-for="item in categoryList"
+        :key="item._id"
+        :item="item"
+        class="item"></category-item>
+    </view>
+
+    <!-- 没有更多数据了 -->
+    <view class="loadingLayout" v-if="categoryList.length || noMoreData">
+      <uni-load-more
+        :status="noMoreData ? 'noMore' : 'loading'"></uni-load-more>
+    </view>
+  </view>
 </template>
 
 <script setup>
 import { getCategoryListApi } from "@/api/category.js";
 
-const paging = ref(null);
 const categoryList = ref([]); // 分类列表
-const queryList = (pageNo, pageSize) => {
-  console.log("pageNo, pageSize", pageNo, pageSize);
-  getCategoryListApi({
-    pageNum: pageNo,
-    pageSize: pageSize,
-  })
-    .then((res) => {
-      paging.value.complete(res.data);
-    })
-    .catch(() => {
-      paging.value.complete(false);
-    });
+const queryParams = {
+  pageNum: 1,
+  pageSize: 15,
 };
+const noMoreData = ref(false); // 是否有更多数据了
+
+async function getCategoryList() {
+  const res = await getCategoryListApi(queryParams);
+  console.log("分类列表：", res);
+
+  if (res.data.length < queryParams.pageSize) {
+    noMoreData.value = true;
+  }
+  categoryList.value = [...categoryList.value, ...res.data];
+}
+
+getCategoryList();
+
+// 触底加载更多
+onReachBottom(() => {
+  console.log(noMoreData.value);
+  if (noMoreData.value) return;
+  console.log("触底了");
+  queryParams.pageNum++;
+  getCategoryList();
+});
 
 // #ifdef MP
 onShareAppMessage((e) => {

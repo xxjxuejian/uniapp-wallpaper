@@ -5,7 +5,7 @@
     <!-- 用户信息 -->
     <view class="user-info">
       <view class="avatar">
-        <image src="../../static/images/xxmLogo.png" mode="aspectFill"></image>
+        <image src="@/static/images/xxmLogo.png" mode="aspectFill"></image>
       </view>
 
       <!-- <view class="login">点击登录</view> -->
