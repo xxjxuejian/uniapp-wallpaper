@@ -133,6 +133,9 @@ import {
   getCategorySelectListApi,
 } from "@/api/home.js";
 
+console.log("vite 环境变量", import.meta.env); // undefined
+console.log("运行环境", import.meta.env.MODE);
+
 const bannerList = ref([]); //轮播列表
 const noticeList = ref([]); // 通知列表
 const dailySelectList = ref([]); // 每日精选列表

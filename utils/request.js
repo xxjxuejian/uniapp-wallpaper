@@ -1,7 +1,8 @@
-const BASE_URL = "https://tea.qingnian8.com/api/bizhi";
-// const BASE_URL = "/api";
+import { SYSTEM_INFO, BASE_URL_H5, BASE_URL_MP } from "@/config.js";
+
 const ACCESS_KEY = "xxj9824";
 
+let BASE_URL = BASE_URL_MP; // 默认小程序用真实地址
 export function request(config = {}) {
   let { url, data = {}, method = "GET", header = {} } = config;
 
@@ -14,6 +15,9 @@ export function request(config = {}) {
   //   title: "加载中...",
   //   mask: true,
   // });
+
+  const plat = SYSTEM_INFO.uniPlatform;
+  const BASE_URL = plat === "web" ? BASE_URL_H5 : BASE_URL_MP;
 
   return new Promise((resolve, reject) => {
     uni.request({
