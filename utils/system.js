@@ -3,6 +3,12 @@ export function useSystemInfo() {
   const systemInfo = uni.getSystemInfoSync();
   // 状态栏高度（所有端都有）
   const statusBarHeight = ref(systemInfo.statusBarHeight || 15);
+  console.log(
+    "平台",
+    uni.getSystemInfoSync().uniPlatform,
+    "状态栏高度",
+    statusBarHeight.value
+  );
 
   // 标题栏高度（不同端不同逻辑）
   const titleBarHeight = ref(40); // 默认一个常见值

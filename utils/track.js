@@ -32,17 +32,22 @@ async function sendReport(apiFn, params) {
   try {
     await apiFn(params); // 第一次尝试
   } catch (err) {
-    console.warn("埋点上报失败，准备重试...", err);
-    try {
-      await apiFn(params); // 重试一次
-    } catch (err2) {
-      console.error("埋点重试失败，缓存到本地", err2);
-      // 缓存的结构是一个对象 {
-      // apiFnName : fnName,
-      // params : {....}
-      // }
-      // 这里仅仅缓存了函数名称，没有实际的函数体，也没办法通过setStorageSync缓存函数本身
-      cacheReport({ apiFnName: apiFn.name, params });
+    // 判断是否为 可恢复失败
+    if (isRetryableError(err)) {
+      console.warn("埋点上报失败，准备重试...", err);
+      try {
+        await apiFn(params); // 重试一次
+      } catch (err2) {
+        console.error("埋点重试失败，缓存到本地", err2);
+        // 缓存的结构是一个对象 {
+        // apiFnName : fnName,
+        // params : {....}
+        // }
+        // 这里仅仅缓存了函数名称，没有实际的函数体，也没办法通过setStorageSync缓存函数本身
+        cacheReport({ apiFnName: apiFn.name, params });
+      }
+    } else {
+      console.error(`[埋点] 不可恢复失败，丢弃: ${apiFn.name}`, err);
     }
   }
 }
@@ -63,6 +68,7 @@ async function flushReports(apiMap) {
 
   const remain = []; // 本次重发中 再次失败的埋点函数
   for (const item of reports) {
+    // item的结构：{ apiFnName: apiFn.name, params }
     const apiFn = apiMap[item.apiFnName];
     // 在映射表中找不到对应的函数，
     if (!apiFn) {

@@ -5,7 +5,7 @@
     <!-- 用户信息 -->
     <view class="user-info">
       <view class="avatar">
-        <image src="@/static/images/xxmLogo.png" mode="aspectFill"></image>
+        <image src="@/static/images/bz-logo.webp" mode="aspectFill"></image>
       </view>
 
       <!-- <view class="login">点击登录</view> -->
@@ -47,7 +47,8 @@
             </view>
           </view>
         </navigator>
-        <navigator url="/pages/funny/index">
+        <!-- 梗图集 -->
+        <!-- <navigator url="/pages/funny/index">
           <view class="row">
             <view class="left">
               <uni-icons type="image-filled" size="20"></uni-icons>
@@ -57,7 +58,7 @@
               <uni-icons type="right" size="15" color="#aaa"></uni-icons>
             </view>
           </view>
-        </navigator>
+        </navigator> -->
       </view>
 
       <view class="section">
@@ -101,7 +102,8 @@
           <button @click="handleContact" class="contact-btn">拨打电话</button>
           <!-- #endif -->
         </view>
-        <navigator url="/pages/notice/index">
+        <!-- 反馈建议 -->
+        <!-- <navigator url="/pages/notice/index">
           <view class="row">
             <view class="left">
               <uni-icons type="chatboxes-filled" size="20"></uni-icons>
@@ -111,7 +113,7 @@
               <uni-icons type="right" size="15" color="#aaa"></uni-icons>
             </view>
           </view>
-        </navigator>
+        </navigator> -->
       </view>
 
       <view class="section" v-if="isLogin">
